@@ -1,10 +1,26 @@
 [project]
 name = "distributed-notification-system"
 version = "0.1.0"
-description = "Add your description here"
+description = "Template service for distributed-notification-system"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "django>=5.2.8",
     "django-ninja>=1.4.5",
+    "django-stubs>=5.2.7",
+    "pytest>=9.0.0",
+    "pytest-django>=4.11.1",
 ]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+fix = true
+select = ["E", "F", "I"] 
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+docstring-code-format = true
