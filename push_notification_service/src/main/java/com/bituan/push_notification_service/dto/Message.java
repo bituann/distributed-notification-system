@@ -7,6 +7,7 @@ public class Message {
     private NotificationType notificationType;
     private String userId;
     private String templateCode;
+    private UserData userData;
     private String requestId;
     private int priority;
     private Metadata metadata;
