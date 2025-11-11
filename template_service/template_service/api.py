@@ -43,3 +43,12 @@ def get_all_templates(request, query: Query[TemplatesQuerySchema]):
     data = TemplateService.get_all_templates(query)
     data["message"] = "Templates retrieved successfully"
     return data
+
+
+@router.get("/templates/{template_id}", response={200: TemapleteDataResponse})
+def get_template_by_id(request, template_id: str):
+    template = TemplateService.get_template_by_id(template_id)
+    return {
+        "message": "Template retrieved successfully",
+        "data": template,
+    }

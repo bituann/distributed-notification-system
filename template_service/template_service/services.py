@@ -91,3 +91,8 @@ class TemplateService:
             }
         except Exception:
             return {}
+
+    @classmethod
+    def get_template_by_id(cls, template_id):
+        template = Template.objects.filter(id=template_id).first()
+        return template
