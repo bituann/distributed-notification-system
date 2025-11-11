@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+
+### project specific ###
+ src/main/resources/rabbitmq.properties
