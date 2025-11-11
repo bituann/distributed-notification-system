@@ -9,6 +9,14 @@ public class User {
 
     public User() {}
 
+    public User(String name, String email, String pushToken, UserPreference userPreference, String password) {
+        this.name = name;
+        this.email = email;
+        this.pushToken = pushToken;
+        this.userPreference = userPreference;
+        this.password = password;
+    }
+
     public String getName() {
         return name;
     }
