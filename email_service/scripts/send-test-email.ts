@@ -21,7 +21,7 @@ async function sendTestEmail() {
 
   const msg = {
     message_id: 'test123_' + Date.now(),
-    recipient_email: 'olii@gmail.com',
+    recipient_email: 'noone12345@nonexistentdomain.com',
     subject: 'Test Email from NestJS',
     message: 'Hello! This is a real email test.',
   };

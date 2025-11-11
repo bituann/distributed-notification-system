@@ -5,7 +5,14 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { CircuitBreaker } from '../email/utils/circuit-breaker.utils';
 import { redisClient } from './utils/redis.utils';
-import { StatusPublisher } from '../status/status.publisher';
+import { StatusPublisher } from './status/status.publisher';
+import { classifySmtpError } from './utils/bounce.utils';
+
+import {
+  emailsSent,
+  emailsFailed,
+  emailsBounced,
+} from './metrics/metrics.controller';
 
 @Injectable()
 export class EmailService {
@@ -49,6 +56,8 @@ export class EmailService {
 
       this.logger.log(`Email sent to ${payload.recipient_email}`);
 
+      emailsSent.inc();
+
       await redisClient.set(`email_sent:${idempotencyKey}`, '1', { EX: 86400 });
       this.circuitBreaker.recordSuccess();
 
@@ -57,7 +66,16 @@ export class EmailService {
       this.logger.error('Failed to send email', err);
       this.circuitBreaker.recordFailure();
 
-      await this.statusPublisher.publishFailed(idempotencyKey, err.message);
+      const { permanent, reason } = classifySmtpError(err);
+
+      if (permanent) {
+        emailsBounced.inc();
+        await this.statusPublisher.publishFailed(idempotencyKey, reason);
+      } else {
+        emailsFailed.inc();
+        await this.statusPublisher.publishFailed(idempotencyKey, reason);
+      }
+
       throw err;
     }
   }

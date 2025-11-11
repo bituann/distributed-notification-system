@@ -2,10 +2,14 @@ import { Controller, Get } from '@nestjs/common';
 import * as amqp from 'amqplib';
 import { redisClient } from '../utils/redis.utils';
 import * as nodemailer from 'nodemailer';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('health')
 @Controller('health')
 export class HealthController {
   @Get()
+  @ApiOperation({ summary: 'Check service health' })
+  @ApiResponse({ status: 200, description: 'Service health status' })
   async getHealth() {
     const meta: any = { smtp: false, redis: false, rabbitmq: false };
 

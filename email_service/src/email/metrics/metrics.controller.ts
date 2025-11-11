@@ -1,6 +1,7 @@
 import { Controller, Get, Res } from '@nestjs/common';
 import type { Response } from 'express';
 import * as client from 'prom-client';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 const registry = new client.Registry();
 client.collectDefaultMetrics({ register: registry });
@@ -22,9 +23,12 @@ registry.registerMetric(emailsSent);
 registry.registerMetric(emailsFailed);
 registry.registerMetric(emailsBounced);
 
+@ApiTags('metrics')
 @Controller('metrics')
 export class MetricsController {
   @Get()
+  @ApiOperation({ summary: 'Prometheus metrics' })
+  @ApiResponse({ status: 200, description: 'Metrics output' })
   async getMetrics(@Res() res: Response) {
     res.setHeader('Content-Type', registry.contentType);
     res.send(await registry.metrics());
