@@ -11,7 +11,6 @@ class TemplateCategory(models.TextChoices):
 class Template(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
     category = models.CharField(
         max_length=20,
         choices=TemplateCategory.choices,
@@ -45,7 +44,7 @@ class Template(models.Model):
         return f"{self.name} ({self.category}) - [lang: {self.language}]"
 
     def get_latest_version(self):
-        return (
+        template = (
             Template.objects.filter(
                 name=self.name,
                 category=self.category,
@@ -55,3 +54,4 @@ class Template(models.Model):
             .order_by("-version")
             .first()
         )
+        return template if template else None
