@@ -3,6 +3,8 @@ from ninja import Query, Router
 from template_service.schemas import (
     CreateTemplate,
     ErrorResponse,
+    RenderTemplateRequest,
+    RenderedTemplateResponse,
     TemapleteDataResponse,
     TemplateListResponse,
     TemplatesQuerySchema,
@@ -52,3 +54,9 @@ def get_template_by_id(request, template_id: str):
         "message": "Template retrieved successfully",
         "data": template,
     }
+
+
+@router.post("/render", response={200: RenderedTemplateResponse})
+def render_template(request, payload: RenderTemplateRequest):
+    data = TemplateService.render_template(payload)
+    return {"message": "Template rendered successfully", "data": data}

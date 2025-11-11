@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Generic, List, Optional, TypeVar
 
 from ninja import Field, ModelSchema, Schema
+from pydantic import model_validator
 
 from template_service.models import Template
 
@@ -118,3 +119,41 @@ class PaginationMeta(Schema):
 class TemplateListResponse(ApiResponse):
     data: List[TemplateResponse] = Field(..., description="List of templates")
     meta: PaginationMeta = Field(..., description="Pagination metadata")
+
+
+class RenderTemplateRequest(Schema):
+    id: Optional[str] = Field(None, description="The ID of the template to render")
+    name: Optional[str] = Field(None, description="The name of the template to render")
+    context: Optional[dict] = Field(
+        None, description="The context variables for rendering the template"
+    )
+    language: Optional[str] = Field(
+        "en", description="The language code of the template"
+    )
+    category: Optional[TemplateCategory] = Field(
+        None, description="The category of the template"
+    )
+
+    @model_validator(mode="after")
+    def ensure_id_or_name(self):
+        if not self.id and not self.name:
+            raise ValueError("Either 'id' or 'name' must be provided.")
+        return self
+
+
+class RenderedTemplateData(Schema):
+    template_id: str = Field(..., description="The ID of the rendered template")
+    template_name: str = Field(..., description="The name of the rendered template")
+    version: int = Field(..., description="The version of the rendered template")
+    category: TemplateCategory = Field(
+        ..., description="The category of the rendered template"
+    )
+    language: str = Field(..., description="The language of the rendered template")
+    subject: Optional[str] = Field(
+        None, description="The subject of the rendered template"
+    )
+    body: str = Field(..., description="The body of the rendered template")
+
+
+class RenderedTemplateResponse(ApiResponse):
+    data: RenderedTemplateData = Field(..., description="The rendered template data")
