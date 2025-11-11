@@ -41,7 +41,9 @@ class Template(models.Model):
         unique_together = [["name", "category", "language", "version"]]
 
     def __str__(self):
-        return f"{self.name} ({self.category}) - [lang: {self.language}]"
+        return (
+            f"{self.name} ({self.category}) - [lang: {self.language}] - v{self.version}"
+        )
 
     def get_latest_version(self):
         template = (
