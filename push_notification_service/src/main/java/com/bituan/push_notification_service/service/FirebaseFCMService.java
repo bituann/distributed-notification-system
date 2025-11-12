@@ -30,7 +30,7 @@ public class FirebaseFCMService {
             maxAttempts = 5, // Maximum number of retry attempts
             backoff = @Backoff(delay = 1, multiplier = 3) // exponential backoff
     )
-    @CircuitBreaker(name="myService", fallbackMethod = "test")
+    @CircuitBreaker(name="myService", fallbackMethod = "failedRetry")
     public void pushNotification (String token, Notification notification, String notificationId) {
         Message message = Message.builder().setToken(token).setNotification(notification).build();
         try {
@@ -53,8 +53,7 @@ public class FirebaseFCMService {
         }
     }
 
-    // when retry fails
-    @Recover
+    // when retry fails, and when circuit breaker opens
     public void failedRetry (RuntimeException e) {
         NotificationStatusResponse response = new NotificationStatusResponse();
         response.setNotificationId(e.getMessage());
@@ -64,12 +63,5 @@ public class FirebaseFCMService {
 
         // update notification status
         apiGatewayService.sendNotificationStatus(response);
-
-        throw e;
-    }
-
-    // when circuit breaker opens
-    public void test (RuntimeException e) {
-        System.out.println("Circuit breaker works!");
     }
 }
