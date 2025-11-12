@@ -10,16 +10,13 @@ import java.time.Instant;
 @Service
 public class APIGatewayService {
     @Async
-    public void sendNotificationStatus (String notificationId) {
-        NotificationStatusResponse notificationStatusResponse = new NotificationStatusResponse();
-        notificationStatusResponse.setNotificationId(notificationId);
-        notificationStatusResponse.setStatus(NotificationStatus.delivered);
-        notificationStatusResponse.setTimestamp(Instant.now());
-
+    public void sendNotificationStatus (NotificationStatusResponse status) {
         // send notification status to status endpoint
+        System.out.println(status);
     }
 
     public void updateUserToken (String userId, String token) {
         // use update endpoint to update user token
+        System.out.println(token);
     }
 }
