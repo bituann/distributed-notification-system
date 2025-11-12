@@ -1,0 +1,35 @@
+# Stage 1: Build
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy source
+COPY tsconfig.json ./
+COPY src ./src
+
+# Build
+RUN npm run build
+
+# Stage 2: Runtime
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+
+# Install only prod deps
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+# Copy build output
+COPY --from=builder /app/dist ./dist
+
+# Expose HTTP port (Swagger, health, metrics)
+EXPOSE 3000
+
+# Healthcheck (HTTP server must be up)
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:3000/health || exit 1
+
+# Start the HTTP server + connect microservice RMQ
+CMD ["node", "dist/main.js"]
