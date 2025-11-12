@@ -11,7 +11,7 @@ shell:
 	uv run python manage.py shell
 
 test:
-	uv run pytest -v
+	uv run python manage.py test
 
 format:
 	uv run ruff format .
