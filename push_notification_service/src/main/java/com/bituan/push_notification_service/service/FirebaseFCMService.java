@@ -3,7 +3,6 @@ package com.bituan.push_notification_service.service;
 import com.bituan.push_notification_service.dto.NotificationStatus;
 import com.bituan.push_notification_service.dto.NotificationStatusResponse;
 import com.google.firebase.messaging.*;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Recover;
@@ -27,7 +26,7 @@ public class FirebaseFCMService {
     @Async
     @Retryable(
             maxAttempts = 5, // Maximum number of retry attempts
-            backoff = @Backoff(delay = 1000, multiplier = 2)
+            backoff = @Backoff(delay = 10, multiplier = 2)
     )
     public void pushNotification (String token, Notification notification, String notificationId) {
         Message message = Message.builder().setToken(token).setNotification(notification).build();
