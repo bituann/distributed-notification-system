@@ -4,7 +4,6 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,18 +21,32 @@ public class RabbitMQConfig {
     @Value("${rabbitmq.queue.name}")
     private String queue;
 
+    @Value("${rabbitmq.dead.queue.name}")
+    private String deadQueue;
+
     @Value("${rabbitmq.exchange.name}")
     private String exchange;
 
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
 
+    @Value("${rabbitmq.dead.routing.key}")
+    private String deadRoutingKey;
+
     @Value("${firebase.config.path}")
     private String firebaseConfigPath;
 
     @Bean
     public Queue queue() {
-        return new Queue(queue);
+        return QueueBuilder.durable(queue)
+                .withArgument("x-dead-letter-exchange", exchange)
+                .withArgument("x-dead-letter-routing-key", deadRoutingKey)
+                .build();
+    }
+
+    @Bean
+    public Queue deadQueue() {
+        return new Queue(deadQueue);
     }
 
     @Bean
@@ -47,6 +60,14 @@ public class RabbitMQConfig {
                 .bind(queue())
                 .to(exchange())
                 .with(this.routingKey);
+    }
+
+    @Bean
+    public Binding deadQueueBinding () {
+        return BindingBuilder
+                .bind(deadQueue())
+                .to(exchange())
+                .with(deadRoutingKey);
     }
 
     // configure message converter for serializing json to dto and vice versa
