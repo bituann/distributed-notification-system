@@ -66,7 +66,6 @@ public class RabbitMQConfig {
 
     // initialize firebase app for push notification
     @Bean
-    @CircuitBreaker(name="fcmService")
     public FirebaseMessaging firebaseMessaging () {
         try {
             // possible source of error in prod. handle path appropriately then
