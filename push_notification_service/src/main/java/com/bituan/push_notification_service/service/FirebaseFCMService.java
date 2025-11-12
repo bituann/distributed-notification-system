@@ -25,8 +25,9 @@ public class FirebaseFCMService {
 
     @Async
     @Retryable(
+            retryFor = {RuntimeException.class},
             maxAttempts = 5, // Maximum number of retry attempts
-            backoff = @Backoff(delay = 10, multiplier = 2)
+            backoff = @Backoff(delay = 1, multiplier = 3) // exponential backoff
     )
     public void pushNotification (String token, Notification notification, String notificationId) {
         Message message = Message.builder().setToken(token).setNotification(notification).build();
