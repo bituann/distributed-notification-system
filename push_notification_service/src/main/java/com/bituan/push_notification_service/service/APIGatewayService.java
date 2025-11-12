@@ -18,4 +18,8 @@ public class APIGatewayService {
 
         // send notification status to status endpoint
     }
+
+    public void updateUserToken (String userId, String token) {
+        // use update endpoint to update user token
+    }
 }
