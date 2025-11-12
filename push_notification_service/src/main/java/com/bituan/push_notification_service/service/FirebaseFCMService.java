@@ -41,6 +41,7 @@ public class FirebaseFCMService {
             // update notification status
             apiGatewayService.sendNotificationStatus(response);
         } catch (FirebaseMessagingException e) {
+            // token validation
             if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED) {
                 //update user token to null
                 apiGatewayService.updateUserToken("", null);
