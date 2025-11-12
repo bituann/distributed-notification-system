@@ -4,6 +4,7 @@ import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -65,6 +66,7 @@ public class RabbitMQConfig {
 
     // initialize firebase app for push notification
     @Bean
+    @CircuitBreaker(name="fcmService")
     public FirebaseMessaging firebaseMessaging () {
         try {
             // possible source of error in prod. handle path appropriately then
