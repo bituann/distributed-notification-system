@@ -36,7 +36,9 @@ export class EmailService {
     }
 
     try {
-      const templateUrl = `https://muizzyranking.pythonanywhere.com/api/v1/templates/${payload.template_code}`;
+      const templateUrl = process.env.TEMPLATE_SERVICE_URL;
+      if (!templateUrl) throw new Error('TEMPLATE_SERVICE_URL not set');
+
       const response = await axios.get(templateUrl);
       const template = response.data?.html || '<p>{{message}}</p>';
 
