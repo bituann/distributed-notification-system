@@ -11,7 +11,7 @@ export async function setupRabbitMQ() {
   const conn = await amqp.connect(url);
   const ch = await conn.createChannel();
 
-  await ch.assertExchange(EXCHANGE, 'direct', { durable: true });
+  await ch.assertExchange(EXCHANGE, 'direct', { durable: false });
 
   await ch.assertQueue(EMAIL_QUEUE, {
     durable: true,

@@ -10,34 +10,32 @@ import {
 export class StatusConsumer {
   private readonly logger = new Logger(StatusConsumer.name);
 
-  @EventPattern('notification_status')
-  async handleStatus(@Payload() data: any) {
-    this.logger.log(`Got status update: ${JSON.stringify(data)}`);
+  @EventPattern('email')
+  async handleEmail(@Payload() data: any) {
+    this.logger.log(`Got email notification: ${JSON.stringify(data)}`);
+    emailsSent.inc();
+  }
 
-    const { status, notification_id, error } = data;
+  @EventPattern('push')
+  async handlePush(@Payload() data: any) {
+    this.logger.log(`Got push notification: ${JSON.stringify(data)}`);
+  }
 
-    switch (status) {
-      case 'delivered':
-        emailsSent.inc();
-        this.logger.log(`Incremented emailsSent for ${notification_id}`);
-        break;
+  @EventPattern('failed')
+  async handleFailed(@Payload() data: any) {
+    this.logger.warn(`Got failed notification: ${JSON.stringify(data)}`);
+    const { notification_id, error } = data;
 
-      case 'failed':
-        if (
-          /user unknown|mailbox unavailable|invalid recipient|no such user/i.test(
-            error || '',
-          )
-        ) {
-          emailsBounced.inc();
-          this.logger.warn(`Incremented emailsBounced for ${notification_id}`);
-        } else {
-          emailsFailed.inc();
-          this.logger.warn(`Incremented emailsFailed for ${notification_id}`);
-        }
-        break;
-
-      default:
-        this.logger.warn(`Unknown status: ${status} for ${notification_id}`);
+    if (
+      /user unknown|mailbox unavailable|invalid recipient|no such user/i.test(
+        error || '',
+      )
+    ) {
+      emailsBounced.inc();
+      this.logger.warn(`Incremented emailsBounced for ${notification_id}`);
+    } else {
+      emailsFailed.inc();
+      this.logger.warn(`Incremented emailsFailed for ${notification_id}`);
     }
   }
 }

@@ -21,6 +21,9 @@ export class StatusPublisher {
           durable: true,
           arguments: { 'x-max-priority': 10 },
         },
+
+        exchange: 'notifications.direct',
+        exchangeType: 'direct',
       },
     });
   }
@@ -32,7 +35,7 @@ export class StatusPublisher {
       timestamp: new Date().toISOString(),
       error: null,
     };
-    return lastValueFrom(this.client.emit('notification_status', payload));
+    return lastValueFrom(this.client.emit({ cmd: 'email' }, payload));
   }
 
   async publishFailed(notification_id: string, error: string) {
@@ -42,6 +45,6 @@ export class StatusPublisher {
       timestamp: new Date().toISOString(),
       error,
     };
-    return lastValueFrom(this.client.emit('notification_status', payload));
+    return lastValueFrom(this.client.emit({ cmd: 'failed' }, payload));
   }
 }
