@@ -47,9 +47,9 @@ public class FirebaseFCMService {
             if (e.getMessagingErrorCode() == MessagingErrorCode.UNREGISTERED) {
                 //update user token to null
                 apiGatewayService.updateUserToken("", null);
-            } else {
-                throw new RuntimeException(notificationId, e);
             }
+
+            throw new RuntimeException(notificationId, e);
         }
     }
 

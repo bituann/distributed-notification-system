@@ -7,11 +7,11 @@ import lombok.Data;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class Message {
-    private NotificationType notificationType;
+    private NotificationType type;
     private String userId;
+    private String email;
+    private String pushToken;
+    private String message;
     private String templateCode;
-    private UserData variables;
-    private String requestId;
     private int priority;
-    private Metadata metadata;
 }

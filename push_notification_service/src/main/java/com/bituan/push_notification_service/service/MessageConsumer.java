@@ -11,8 +11,8 @@ import java.util.UUID;
 @Service
 public class MessageConsumer {
 
-    private UserService userService;
-    private FirebaseFCMService firebaseFCMService;
+    private final UserService userService;
+    private final FirebaseFCMService firebaseFCMService;
 
     @Autowired
     MessageConsumer(UserService userService, FirebaseFCMService firebaseFCMService) {
@@ -26,7 +26,7 @@ public class MessageConsumer {
         String token = userService.getUserById(message.getUserId()).getPushToken();
         // get template
         // create notification id
-        String notificationId = message.getRequestId();
+        String notificationId = ""; // message.getRequestId();
         // create notification
         Notification notification = Notification.builder()
                 .setTitle("Title")
@@ -35,5 +35,7 @@ public class MessageConsumer {
                 .build();
         // push notification
         firebaseFCMService.pushNotification(token, notification, notificationId);
+
+        System.out.printf("Message received -> %s%n", message);
     }
 }
