@@ -18,7 +18,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(process.env.PORT || 3000);
+  await app.listen(process.env.PORT || 3000, '0.0.0.0');
   console.log(`HTTP server running on port ${process.env.PORT || 3000}`);
 
   const rmqUrl = process.env.RABBITMQ_URL;
