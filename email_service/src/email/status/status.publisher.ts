@@ -3,22 +3,23 @@ import {
   ClientProxyFactory,
   Transport,
 } from '@nestjs/microservices';
+import { lastValueFrom } from 'rxjs';
 
 export class StatusPublisher {
   private client: ClientProxy;
 
   constructor() {
+    const rmqUrl = process.env.RABBITMQ_URL;
+    if (!rmqUrl) throw new Error('RABBITMQ_URL is not defined');
+
     this.client = ClientProxyFactory.create({
       transport: Transport.RMQ,
       options: {
-        urls: [process.env.RABBITMQ_URL || 'amqp://rabbitmq:5672'],
+        urls: [rmqUrl],
         queue: 'email.queue',
         queueOptions: {
           durable: true,
-          arguments: {
-            'x-dead-letter-exchange': 'notifications.direct',
-            'x-dead-letter-routing-key': 'failed',
-          },
+          arguments: { 'x-max-priority': 10 },
         },
       },
     });
@@ -31,8 +32,7 @@ export class StatusPublisher {
       timestamp: new Date().toISOString(),
       error: null,
     };
-
-    return this.client.emit('notification_status', payload).toPromise();
+    return lastValueFrom(this.client.emit('notification_status', payload));
   }
 
   async publishFailed(notification_id: string, error: string) {
@@ -42,6 +42,6 @@ export class StatusPublisher {
       timestamp: new Date().toISOString(),
       error,
     };
-    return this.client.emit('notification_status', payload).toPromise();
+    return lastValueFrom(this.client.emit('notification_status', payload));
   }
 }

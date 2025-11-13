@@ -1,4 +1,5 @@
 version: '3.9'
+
 services:
   email_service:
     build:
@@ -9,10 +10,10 @@ services:
       - .env
     environment:
       - PORT=3000
-      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - RABBITMQ_URL=${RABBITMQ_URL}
+      - REDIS_URL=${REDIS_URL}
       - SMTP_USER=${SMTP_USER}
       - SMTP_PASS=${SMTP_PASS}
-      - TEMPLATE_SERVICE_URL=${TEMPLATE_SERVICE_URL:-http://template_service:4000/api/v1/templates/render}
       - NODE_ENV=production
     depends_on:
       - rabbitmq
@@ -20,7 +21,7 @@ services:
     ports:
       - '3000:3000'
     healthcheck:
-      test: ['CMD', 'wget', '-qO-', 'http://localhost:3000/health']
+      test: ['CMD-SHELL', 'wget -qO- http://localhost:3000/health || exit 1']
       interval: 30s
       timeout: 5s
       retries: 3
@@ -42,4 +43,3 @@ services:
     container_name: redis
     ports:
       - '6379:6379'
-    restart: unless-stopped

@@ -80,7 +80,7 @@ jobs:
               -p 3000:3000 \
               -e PORT=3000 \
               -e RABBITMQ_URL=${{ secrets.RABBITMQ_URL }} \
+              -e REDIS_URL=${{ secrets.REDIS_URL }} \
               -e SMTP_USER=${{ secrets.SMTP_USER }} \
               -e SMTP_PASS=${{ secrets.SMTP_PASS }} \
-              -e TEMPLATE_SERVICE_URL=${{ secrets.TEMPLATE_SERVICE_URL }} \
               $IMAGE:$TAG
